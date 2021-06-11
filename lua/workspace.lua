@@ -101,15 +101,18 @@ function M.generate_file_list()
         M.echoerror("workspace not loaded")
         return {}
     end
-    local file_list_string = ""
+    local path_list = {}
+    local show_list = {}
+    local index = 0
     for _, base_path in ipairs(M.current_config.folders) do
         local filelist_for_one_path = M.rg_list(base_path)
-        file_list_string = string.format("%s\n%s", file_list_string, filelist_for_one_path )
-    end
-    local path_list = split(file_list_string, "\n")
-    local show_list = {}
-    for index, path in ipairs(path_list) do
-        table.insert(show_list, M.make_show_list(index, path))
+        --local file_list_string = string.format("%s\n%s", file_list_string, filelist_for_one_path )
+        local sub_path_list = split(filelist_for_one_path, "\n")
+        for _, path in ipairs(sub_path_list) do
+            index = index + 1
+            table.insert(show_list, M.make_show_list(index, path, base_path))
+            table.insert(path_list, path)
+        end
     end
     local lists = {
         show_list = show_list,
@@ -118,9 +121,9 @@ function M.generate_file_list()
     M.file_list_cache[M.current_config.name] = lists
 end
 
-function M.make_show_list(index, path)
+function M.make_show_list(index, path, base_path)
     local filename = M.get_file_name_from_path(path)
-    return string.format("%s:%s", index, filename)
+    return string.format("%s:%s (%s)", index, filename, base_path.name)
 end
 
 function M.get_file_name_from_path(path)

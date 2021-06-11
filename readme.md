@@ -17,8 +17,8 @@ then provide filelist only in configured path.
 -- comments is allowed
 return {
     folders = {
-        {path = "c:\\Some\\Path\\To\\A\\Folder"},
-        {path = "c:\\Another\\Path\\To\\A\\Folder"},
+        {name="folder1", path = "c:\\Some\\Path\\To\\A\\Folder"},
+        {name="folder2", path = "c:\\Another\\Path\\To\\A\\Folder"},
     },
     settings = {
         ["files.exclude"] = {
