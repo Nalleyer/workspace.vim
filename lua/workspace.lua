@@ -2,7 +2,7 @@ local M = {
     -- workspace config table. name -> config
     configs = {},
     current_config = nil,
-    -- cached filelist. name -> []
+    -- cached filelist. name -> {show_list, path_list}
     file_list_cache = {}
 }
 
@@ -102,13 +102,30 @@ function M.generate_file_list()
         return {}
     end
     local file_list_string = ""
-    for _, path in ipairs(M.current_config.folders) do
-        local filelist_for_one_path = M.rg_list(path)
+    for _, base_path in ipairs(M.current_config.folders) do
+        local filelist_for_one_path = M.rg_list(base_path)
         file_list_string = string.format("%s\n%s", file_list_string, filelist_for_one_path )
     end
-    local list = split(file_list_string, "\n")
-    M.file_list_cache[M.current_config.name] = list
-    return list
+    local path_list = split(file_list_string, "\n")
+    local show_list = {}
+    for index, path in ipairs(path_list) do
+        table.insert(show_list, M.make_show_list(index, path))
+    end
+    local lists = {
+        show_list = show_list,
+        path_list = path_list,
+    }
+    M.file_list_cache[M.current_config.name] = lists
+end
+
+function M.make_show_list(index, path)
+    local filename = M.get_file_name_from_path(path)
+    return string.format("%s:%s", index, filename)
+end
+
+function M.get_file_name_from_path(path)
+    local splited = split(path, "\\")
+    return splited[#splited]
 end
 
 function M.get_file_list()
@@ -120,11 +137,18 @@ function M.get_file_list()
         M.generate_file_list()
     end
     local list = M.file_list_cache[M.current_config.name]
-    return list
+    return list.show_list
+end
+
+function M.open_file_with_showname(showname)
+    local splited = split(showname, ":")
+    local index = tonumber(splited[1])
+    local list = M.file_list_cache[M.current_config.name]
+    local file_path = list.path_list[index]
+    M.command("e "..file_path)
 end
 
 function M.test()
-    local list = M.generate_file_list()
 end
 
 return M
