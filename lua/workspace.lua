@@ -148,6 +148,10 @@ function M.open_file_with_showname(showname)
     M.command("e "..file_path)
 end
 
+function M.is_workspace_loaded()
+    return M.current_config ~= nil
+end
+
 function M.test()
 end
 

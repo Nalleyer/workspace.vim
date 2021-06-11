@@ -6,3 +6,7 @@ function! workspace#OpenFile(showname)
     let l:luacommand = "require(\"workspace\").open_file_with_showname(\"" . a:showname ."\")"
     execute "lua ". l:luacommand
 endfunction
+
+function! workspace#IsWorkspaceLoaded()
+    return luaeval('require("workspace").is_workspace_loaded()')
+endfunction
